@@ -1,2 +1,2845 @@
 # Focus-on-your-life
 Приложение для реализации целей. Ставь задачи с дедлайнами, разбивай на шаги и выполняй ежедневно. Трекер сократит время в соцсетях до 10 минут. Планируй учёбу и работу, используй фокус-таймер. Статистика и достижения мотивируют. Убирай отвлекающие факторы и двигайся к мечте постепенно. Начни путь к успеху с планированием и контролем времени!
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Goal Master - Умные Цели</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
+            --secondary: #10B981;
+            --secondary-light: #34D399;
+            --accent: #F59E0B;
+            --accent-light: #FBBF24;
+            --danger: #EF4444;
+            --danger-light: #F87171;
+            --purple: #8B5CF6;
+            --purple-light: #A78BFA;
+            --pink: #EC4899;
+            --bg: #F8FAFC;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            --bg-card: #FFFFFF;
+            --bg-card-hover: #F1F5F9;
+            --text: #1E293B;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --border-light: #CBD5E1;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.2);
+            --gradient-1: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%);
+            --gradient-2: linear-gradient(135deg, #10B981 0%, #34D399 100%);
+            --gradient-3: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            --gradient-4: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
+            --gradient-5: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 90px;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(240, 147, 251, 0.1) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, -5%) rotate(5deg); }
+        }
+
+        .header {
+            padding: 24px 20px 32px;
+            position: relative;
+            background: var(--bg-gradient);
+            border-radius: 0 0 32px 32px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mini-stat {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        .mini-stat .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .mini-stat .label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .greeting {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .greeting .highlight {
+            background: linear-gradient(90deg, #FCD34D, #FBBF24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .greeting-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .stat-card.goals::before { background: var(--gradient-1); }
+        .stat-card.tasks::before { background: var(--gradient-2); }
+        .stat-card.social::before { background: var(--gradient-3); }
+        .stat-card.focus::before { background: var(--gradient-4); }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card .icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card.goals .icon { background: linear-gradient(135deg, #EEF2FF, #E0E7FF); }
+        .stat-card.tasks .icon { background: linear-gradient(135deg, #D1FAE5, #A7F3D0); }
+        .stat-card.social .icon { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+        .stat-card.focus .icon { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); }
+
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .social-tracker {
+            margin: 0 20px 24px;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #FCD34D 100%);
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.2);
+        }
+
+        .social-tracker::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .social-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .social-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #92400E;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .social-badge {
+            background: white;
+            color: #D97706;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .social-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .social-time {
+            font-size: 42px;
+            font-weight: 800;
+            color: #92400E;
+            line-height: 1;
+        }
+
+        .social-label {
+            font-size: 12px;
+            color: #B45309;
+            margin-top: 4px;
+        }
+
+        .social-target {
+            text-align: right;
+        }
+
+        .social-target-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .social-target-label {
+            font-size: 11px;
+            color: #B45309;
+        }
+
+        .social-timer-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .social-timer-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .social-timer-btn.start {
+            background: white;
+            color: #D97706;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-timer-btn.stop {
+            background: #EF4444;
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .social-timer-btn.reset {
+            background: white;
+            color: var(--text-secondary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .streak-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 6px;
+        }
+
+        .streak-day {
+            flex: 1;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .streak-day.active {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        .streak-day.today {
+            border: 2px solid white;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .streak-day .day-name {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #92400E;
+        }
+
+        .streak-day .day-icon {
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .section {
+            padding: 0 20px 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-add {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 12px;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-add:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .goal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .goal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .goal-card.priority-high::before { background: linear-gradient(90deg, #EF4444, #F87171); }
+        .goal-card.priority-medium::before { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+        .goal-card.priority-low::before { background: linear-gradient(90deg, #10B981, #34D399); }
+
+        .goal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .goal-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+        }
+
+        .goal-title {
+            font-size: 17px;
+            font-weight: 600;
+            flex: 1;
+            line-height: 1.4;
+            color: var(--text);
+        }
+
+        .goal-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+
+        .goal-badge.high { background: #FEE2E2; color: #DC2626; }
+        .goal-badge.medium { background: #FEF3C7; color: #D97706; }
+        .goal-badge.low { background: #D1FAE5; color: #059669; }
+
+        .goal-deadline {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        .goal-progress {
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .goal-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .goal-steps-preview {
+            display: flex;
+            gap: 4px;
+            margin-top: 12px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .step-dot.completed {
+            background: var(--secondary);
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        }
+
+        .step-dot.current {
+            background: var(--primary);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            gap: 14px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .task-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-checkbox {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        .task-checkbox.checked {
+            background: var(--gradient-2);
+            border-color: transparent;
+            color: white;
+        }
+
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+            color: var(--text);
+        }
+
+        .task-title.completed {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .task-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            gap: 16px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .schedule-item:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .schedule-time {
+            min-width: 70px;
+        }
+
+        .schedule-time-start {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .schedule-time-end {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .schedule-divider {
+            width: 3px;
+            height: 30px;
+            border-radius: 2px;
+            background: var(--gradient-4);
+        }
+
+        .schedule-divider.study { background: var(--gradient-1); }
+        .schedule-divider.work { background: var(--gradient-2); }
+        .schedule-divider.break { background: var(--gradient-3); }
+
+        .schedule-info {
+            flex: 1;
+        }
+
+        .schedule-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .schedule-type {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .schedule-type.study { background: #EEF2FF; color: var(--primary); }
+        .schedule-type.work { background: #D1FAE5; color: var(--secondary); }
+        .schedule-type.break { background: #FEF3C7; color: var(--accent); }
+
+        .timer-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .timer-circle {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 32px;
+            position: relative;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: #E2E8F0;
+            stroke-width: 8;
+        }
+
+        .timer-circle-progress {
+            fill: none;
+            stroke: url(#timerGradient);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 816;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .timer-time {
+            font-size: 56px;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .timer-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .timer-btn {
+            padding: 16px 40px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .timer-btn.start {
+            background: var(--gradient-2);
+            color: white;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .timer-btn.pause {
+            background: var(--gradient-3);
+            color: white;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .timer-btn.reset {
+            background: var(--bg-card);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .timer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .achievement-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .achievement-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            background: var(--gradient-3);
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .achievement-date {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .stat-detail-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-detail-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .stat-detail-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .stat-detail-bar {
+            height: 10px;
+            background: #E2E8F0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .stat-detail-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: flex-end;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            border-radius: 28px 28px 0 0;
+            padding: 28px 24px 40px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--border);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card-hover);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 18px;
+            background: var(--bg-card-hover);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--text);
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 18px;
+            background: var(--bg-card-hover);
+            color: var(--text);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .ai-processing {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .ai-processing.active {
+            display: block;
+        }
+
+        .ai-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .ai-text {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .ai-subtext {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .ai-steps-preview {
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .ai-step-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--bg-card-hover);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            animation: fadeInUp 0.4s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--gradient-1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .ai-step-text {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        .empty-state .icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 16px 20px;
+            z-index: 100;
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+            background: #EEF2FF;
+        }
+
+        .nav-item .icon {
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active .icon {
+            transform: translateY(-2px);
+        }
+
+        .nav-item .label {
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            font-size: 20px;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .goal-detail-steps {
+            margin-top: 20px;
+        }
+
+        .goal-detail-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 16px;
+            background: var(--bg-card-hover);
+            border-radius: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .goal-detail-step:hover {
+            background: var(--border);
+        }
+
+        .goal-detail-step.completed {
+            opacity: 0.6;
+        }
+
+        .step-check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .step-check.completed {
+            background: var(--gradient-2);
+            border-color: transparent;
+            color: white;
+        }
+
+        .step-info {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .journal-day-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .journal-day-card:hover {
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+        }
+
+        .journal-day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .journal-day-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .journal-day-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .journal-stat {
+            text-align: center;
+        }
+
+        .journal-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .journal-stat-value.good { color: var(--secondary); }
+        .journal-stat-value.warning { color: var(--accent); }
+        .journal-stat-value.bad { color: var(--danger); }
+
+        .journal-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .journal-tasks-list {
+            margin-top: 12px;
+        }
+
+        .journal-task-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            background: var(--bg-card-hover);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .journal-task-item.completed {
+            opacity: 0.6;
+        }
+
+        .journal-task-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .journal-task-check.done {
+            background: var(--gradient-2);
+            color: white;
+        }
+
+        .journal-task-check.pending {
+            background: var(--border);
+            color: var(--text-muted);
+        }
+
+        .weekly-review-card {
+            background: var(--bg-gradient);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 20px;
+            color: white;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+
+        .weekly-review-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .weekly-review-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .weekly-review-subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .productivity-score {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-circle.excellent { border-color: #34D399; box-shadow: 0 0 30px rgba(52, 211, 153, 0.5); }
+        .score-circle.good { border-color: #FBBF24; box-shadow: 0 0 30px rgba(251, 191, 36, 0.5); }
+        .score-circle.average { border-color: rgba(255, 255, 255, 0.5); }
+        .score-circle.poor { border-color: #F87171; box-shadow: 0 0 30px rgba(248, 113, 113, 0.5); }
+
+        .score-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .score-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+        }
+
+        .score-emoji {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .weekly-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .weekly-stat-box {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .weekly-stat-box .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .weekly-stat-box .value {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: white;
+        }
+
+        .weekly-stat-box .label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .weekly-feedback {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .weekly-feedback-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: white;
+        }
+
+        .weekly-feedback-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="app-container">
+        <!-- Главная страница -->
+        <div class="page active" id="page-home">
+            <div class="header">
+                <div class="header-top">
+                    <div class="logo">
+                        <div class="logo-icon">🎯</div>
+                        <span class="logo-text">AI Goal Master</span>
+                    </div>
+                    <div class="header-stats">
+                        <div class="mini-stat">
+                            <div class="value" id="mini-goals">0</div>
+                            <div class="label">Цели</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="value" id="mini-tasks">0</div>
+                            <div class="label">Задачи</div>
+                        </div>
+                    </div>
+                </div>
+                <h1 class="greeting" id="greeting">Добрый день! <span class="highlight">Готов к победам?</span></h1>
+                <p class="greeting-subtitle">ИИ поможет разбить большие цели на маленькие шаги</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card goals">
+                    <div class="icon">🎯</div>
+                    <div class="value" id="goals-count">0</div>
+                    <div class="label">Активных целей</div>
+                </div>
+                <div class="stat-card tasks">
+                    <div class="icon">✅</div>
+                    <div class="value" id="tasks-today">0/0</div>
+                    <div class="label">Задач сегодня</div>
+                </div>
+                <div class="stat-card social">
+                    <div class="icon">📱</div>
+                    <div class="value" id="social-time">0 мин</div>
+                    <div class="label">В соцсетях</div>
+                </div>
+                <div class="stat-card focus">
+                    <div class="icon">⚡</div>
+                    <div class="value" id="focus-time">0 ч</div>
+                    <div class="label">В фокусе</div>
+                </div>
+            </div>
+
+            <div class="social-tracker">
+                <div class="social-header">
+                    <div class="social-title">
+                        📱 Социальные сети
+                        <span class="social-badge">Лимит 10 мин</span>
+                    </div>
+                </div>
+                <div class="social-main">
+                    <div>
+                        <div class="social-time" id="social-timer">00:00</div>
+                        <div class="social-label">Сегодня</div>
+                    </div>
+                    <div class="social-target">
+                        <div class="social-target-value" id="social-target">10 мин</div>
+                        <div class="social-target-label">Цель на день</div>
+                    </div>
+                </div>
+                <div class="social-timer-controls">
+                    <button class="social-timer-btn start" id="social-timer-btn" onclick="toggleSocialTimer()">
+                        <span>▶</span> Начать
+                    </button>
+                    <button class="social-timer-btn reset" onclick="resetSocialTimer()">
+                        <span>↺</span> Сброс
+                    </button>
+                </div>
+                <div class="streak-bar" id="streak-display">
+                    <div class="streak-day" data-day="0"><span class="day-name">Пн</span><span class="day-icon"></span></div>
+                    <div class="streak-day" data-day="1"><span class="day-name">Вт</span><span class="day-icon"></span></div>
+                    <div class="streak-day" data-day="2"><span class="day-name">Ср</span><span class="day-icon"></span></div>
+                    <div class="streak-day" data-day="3"><span class="day-name">Чт</span><span class="day-icon"></span></div>
+                    <div class="streak-day" data-day="4"><span class="day-name">Пт</span><span class="day-icon"></span></div>
+                    <div class="streak-day" data-day="5"><span class="day-name">Сб</span><span class="day-icon"></span></div>
+                    <div class="streak-day" data-day="6"><span class="day-name">Вс</span><span class="day-icon"></span></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🎯 Мои цели</h2>
+                    <button class="btn-add" onclick="openModal('goal-modal')">+</button>
+                </div>
+                <div id="goals-list">
+                    <div class="empty-state">
+                        <div class="icon">🚀</div>
+                        <h3>Нет активных целей</h3>
+                        <p>Добавьте цель, и ИИ автоматически<br>разобьёт её на пошаговый план</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">✅ Задачи на сегодня</h2>
+                </div>
+                <div class="task-list" id="tasks-list">
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
+                        <h3>Нет задач на сегодня</h3>
+                        <p>Задачи создаются автоматически<br>при добавлении цели</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница расписания -->
+        <div class="page" id="page-schedule">
+            <div class="header">
+                <div class="logo" style="margin-bottom: 20px;">
+                    <div class="logo-icon">📅</div>
+                    <span class="logo-text">Расписание</span>
+                </div>
+                <h1 class="greeting">Планируй <span class="highlight">эффективно</span></h1>
+                <p class="greeting-subtitle">Учёба, работа и отдых в балансе</p>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">Сегодня</h2>
+                    <button class="btn-add" onclick="openModal('schedule-modal')">+</button>
+                </div>
+                <div id="schedule-list">
+                    <div class="empty-state">
+                        <div class="icon">📚</div>
+                        <h3>Нет расписания</h3>
+                        <p>Добавьте занятия, учёбу или работу</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница таймера -->
+        <div class="page" id="page-timer">
+            <div class="header">
+                <div class="logo" style="margin-bottom: 20px;">
+                    <div class="logo-icon">⚡</div>
+                    <span class="logo-text">Фокус</span>
+                </div>
+                <h1 class="greeting">Режим <span class="highlight">концентрации</span></h1>
+                <p class="greeting-subtitle">Увеличь продуктивность с Pomodoro</p>
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-circle">
+                    <svg class="timer-svg" viewBox="0 0 280 280">
+                        <defs>
+                            <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366F1"/>
+                                <stop offset="50%" style="stop-color:#8B5CF6"/>
+                                <stop offset="100%" style="stop-color:#EC4899"/>
+                            </linearGradient>
+                        </defs>
+                        <circle class="timer-circle-bg" cx="140" cy="140" r="130"/>
+                        <circle class="timer-circle-progress" id="timer-progress" cx="140" cy="140" r="130"/>
+                    </svg>
+                    <div class="timer-content">
+                        <div class="timer-time" id="timer-display">25:00</div>
+                        <div class="timer-label">минут фокуса</div>
+                    </div>
+                </div>
+                <div class="timer-controls">
+                    <button class="timer-btn start" id="timer-start-btn" onclick="toggleTimer()">
+                        <span>▶</span> Старт
+                    </button>
+                    <button class="timer-btn reset" onclick="resetTimer()">
+                        <span>↺</span> Сброс
+                    </button>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header">
+                    <h2 class="section-title">🏆 Достижения</h2>
+                </div>
+                <div id="achievements-list">
+                    <div class="empty-state">
+                        <div class="icon">🏆</div>
+                        <h3>Нет достижений</h3>
+                        <p>Выполняй задачи и получай награды!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница Дневник -->
+        <div class="page" id="page-journal">
+            <div class="header">
+                <div class="logo" style="margin-bottom: 20px;">
+                    <div class="logo-icon">📔</div>
+                    <span class="logo-text">Дневник</span>
+                </div>
+                <h1 class="greeting">Твой <span class="highlight">прогресс</span></h1>
+                <p class="greeting-subtitle">Ежедневные итоги и недельный обзор</p>
+            </div>
+
+            <div class="section">
+                <div class="weekly-review-card" id="weekly-review">
+                    <div class="weekly-review-header">
+                        <h2 class="weekly-review-title">📊 Обзор недели</h2>
+                        <p class="weekly-review-subtitle" id="week-dates"></p>
+                    </div>
+                    <div class="productivity-score">
+                        <div class="score-circle" id="score-circle">
+                            <span class="score-emoji" id="score-emoji">🎯</span>
+                            <span class="score-value" id="score-value">0%</span>
+                            <span class="score-label">Продуктивность</span>
+                        </div>
+                    </div>
+                    <div class="weekly-stats-grid">
+                        <div class="weekly-stat-box">
+                            <div class="icon">✅</div>
+                            <div class="value" id="week-tasks-done">0</div>
+                            <div class="label">Задач выполнено</div>
+                        </div>
+                        <div class="weekly-stat-box">
+                            <div class="icon">⚡</div>
+                            <div class="value" id="week-focus-hours">0</div>
+                            <div class="label">Часов в фокусе</div>
+                        </div>
+                        <div class="weekly-stat-box">
+                            <div class="icon">📱</div>
+                            <div class="value" id="week-social-mins">0</div>
+                            <div class="label">Минут в соцсетях</div>
+                        </div>
+                        <div class="weekly-stat-box">
+                            <div class="icon">🔥</div>
+                            <div class="value" id="week-streak">0</div>
+                            <div class="label">Дней подряд</div>
+                        </div>
+                    </div>
+                    <div class="weekly-feedback">
+                        <div class="weekly-feedback-title">
+                            <span>💡</span> ИИ рекомендация
+                        </div>
+                        <div class="weekly-feedback-text" id="week-feedback">
+                            Добавь первую задачу, чтобы получить персональные рекомендации!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2 class="section-title">📔 История дней</h2>
+                </div>
+                <div id="journal-list">
+                    <div class="empty-state">
+                        <div class="icon">📔</div>
+                        <h3>Нет записей</h3>
+                        <p>Выполняй задачи каждый день,<br>и здесь появится твоя история</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница статистики -->
+        <div class="page" id="page-stats">
+            <div class="header">
+                <div class="logo" style="margin-bottom: 20px;">
+                    <div class="logo-icon">📊</div>
+                    <span class="logo-text">Статистика</span>
+                </div>
+                <h1 class="greeting">Твой <span class="highlight">прогресс</span></h1>
+                <p class="greeting-subtitle">7 дней активности</p>
+            </div>
+
+            <div class="section">
+                <div class="stat-detail-card">
+                    <div class="stat-detail-header">
+                        <span class="stat-detail-title">✅ Выполнено задач</span>
+                        <span class="stat-detail-value" id="week-tasks" style="color: var(--secondary)">0</span>
+                    </div>
+                    <div class="stat-detail-bar">
+                        <div class="stat-detail-fill" id="week-progress" style="width: 0%; background: var(--gradient-2)"></div>
+                    </div>
+                </div>
+
+                <div class="stat-detail-card">
+                    <div class="stat-detail-header">
+                        <span class="stat-detail-title">📱 Время в соцсетях</span>
+                        <span class="stat-detail-value" id="week-social" style="color: var(--accent)">0 мин</span>
+                    </div>
+                    <div class="stat-detail-bar">
+                        <div class="stat-detail-fill" id="week-social-progress" style="width: 0%; background: var(--gradient-3)"></div>
+                    </div>
+                </div>
+
+                <div class="stat-detail-card">
+                    <div class="stat-detail-header">
+                        <span class="stat-detail-title">⚡ Время в фокусе</span>
+                        <span class="stat-detail-value" id="week-focus" style="color: var(--primary)">0 ч</span>
+                    </div>
+                    <div class="stat-detail-bar">
+                        <div class="stat-detail-fill" id="week-focus-progress" style="width: 0%; background: var(--gradient-4)"></div>
+                    </div>
+                </div>
+
+                <div class="stat-detail-card">
+                    <div class="stat-detail-header">
+                        <span class="stat-detail-title">🎯 Достигнуто целей</span>
+                        <span class="stat-detail-value" id="week-goals" style="color: var(--purple)">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нижняя навигация -->
+        <div class="bottom-nav">
+            <div class="nav-item active" data-page="home" onclick="switchPage('home')">
+                <span class="icon">🏠</span>
+                <span class="label">Главная</span>
+            </div>
+            <div class="nav-item" data-page="schedule" onclick="switchPage('schedule')">
+                <span class="icon">📅</span>
+                <span class="label">Расписание</span>
+            </div>
+            <div class="nav-item" data-page="timer" onclick="switchPage('timer')">
+                <span class="icon">⚡</span>
+                <span class="label">Фокус</span>
+            </div>
+            <div class="nav-item" data-page="journal" onclick="switchPage('journal')">
+                <span class="icon">📔</span>
+                <span class="label">Дневник</span>
+            </div>
+            <div class="nav-item" data-page="stats" onclick="switchPage('stats')">
+                <span class="icon">📊</span>
+                <span class="label">Статистика</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Новая цель с AI -->
+    <div class="modal" id="goal-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">✨ Новая цель</h2>
+                <button class="modal-close" onclick="closeModal('goal-modal')">×</button>
+            </div>
+            
+            <form onsubmit="generateAIGoalPlan(event)" id="goal-form">
+                <div class="form-group">
+                    <label class="form-label">Что ты хочешь достичь?</label>
+                    <input type="text" class="form-input" id="goal-title" placeholder="Например: Выучить английский до уровня B2" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Описание (опционально)</label>
+                    <input type="text" class="form-input" id="goal-description" placeholder="Детали твоей цели">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Дедлайн</label>
+                        <input type="date" class="form-input" id="goal-deadline" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Приоритет</label>
+                        <select class="form-input" id="goal-priority">
+                            <option value="high">🔥 Высокий</option>
+                            <option value="medium" selected>⚡ Средний</option>
+                            <option value="low">💚 Низкий</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Количество шагов</label>
+                    <select class="form-input" id="goal-steps">
+                        <option value="5">5 шагов (быстро)</option>
+                        <option value="10" selected>10 шагов (оптимально)</option>
+                        <option value="15">15 шагов (детально)</option>
+                        <option value="20">20 шагов (максимально)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <span>🤖</span> Сгенерировать план с ИИ
+                </button>
+                <button type="button" class="btn-secondary" onclick="closeModal('goal-modal')">Отмена</button>
+            </form>
+
+            <div class="ai-processing" id="ai-processing">
+                <div class="ai-spinner"></div>
+                <div class="ai-text">🤖 ИИ анализирует твою цель...</div>
+                <div class="ai-subtext">Создаём персональный план достижения</div>
+                <div class="ai-steps-preview" id="ai-steps-preview"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Детали цели -->
+    <div class="modal" id="goal-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 План достижения</h2>
+                <button class="modal-close" onclick="closeModal('goal-detail-modal')">×</button>
+            </div>
+            <div id="goal-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно: Расписание -->
+    <div class="modal" id="schedule-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📅 Добавить в расписание</h2>
+                <button class="modal-close" onclick="closeModal('schedule-modal')">×</button>
+            </div>
+            <form onsubmit="addSchedule(event)">
+                <div class="form-group">
+                    <label class="form-label">Название</label>
+                    <input type="text" class="form-input" id="schedule-title" placeholder="Например: Пара по математике" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Начало</label>
+                        <input type="time" class="form-input" id="schedule-start" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Конец</label>
+                        <input type="time" class="form-input" id="schedule-end" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Тип</label>
+                    <select class="form-input" id="schedule-type">
+                        <option value="study">📚 Учёба</option>
+                        <option value="work">💼 Работа</option>
+                        <option value="break">☕ Перерыв</option>
+                        <option value="sport">🏃 Спорт</option>
+                        <option value="other">📌 Другое</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Добавить</button>
+                <button type="button" class="btn-secondary" onclick="closeModal('schedule-modal')">Отмена</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast уведомления -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message" id="toast-message">Задача выполнена!</span>
+    </div>
+
+    <script>
+        let appData = {
+            goals: [],
+            tasks: [],
+            schedule: [],
+            socialTime: 0,
+            socialTimeToday: 0,
+            focusTime: 0,
+            achievements: [],
+            streak: [false, false, false, false, false, false, false],
+            lastVisit: null,
+            journal: [],
+            socialTimerRunning: false,
+            socialTimerSeconds: 0
+        };
+
+        let timerInterval = null;
+        let timerRunning = false;
+        let timerSeconds = 25 * 60;
+        let timerTotal = 25 * 60;
+
+        let socialTimerInterval = null;
+
+        const aiGoalTemplates = {
+            'английский': [
+                'Определить текущий уровень языка (пройти тест)',
+                'Изучить 100 базовых слов по темам',
+                'Освоить основные грамматические правила',
+                'Начать читать простые тексты на английском',
+                'Смотреть видео с субтитрами ежедневно',
+                'Практиковать аудирование 15 минут в день',
+                'Найти языкового партнёра для общения',
+                'Пройти промежуточный тест уровня',
+                'Расширить словарный запас до 500 слов',
+                'Сдать финальный экзамен на уровень B2'
+            ],
+            'похудеть': [
+                'Проконсультироваться с врачом',
+                'Рассчитать суточную норму калорий',
+                'Составить план питания на неделю',
+                'Начать вести дневник питания',
+                'Добавить 30 минут кардио ежедневно',
+                'Исключить сахар и фастфуд',
+                'Пить 2 литра воды в день',
+                'Добавить силовые тренировки 2 раза в неделю',
+                'Контролировать вес еженедельно',
+                'Достичь целевого веса'
+            ],
+            'заработать': [
+                'Определить желаемую сумму дохода',
+                'Проанализировать текущие расходы',
+                'Составить финансовый план',
+                'Найти дополнительные источники дохода',
+                'Откладывать 10% от дохода ежемесячно',
+                'Изучить основы инвестирования',
+                'Создать резервный фонд',
+                'Увеличить основной доход',
+                'Диверсифицировать источники дохода',
+                'Достичь финансовой цели'
+            ],
+            'научиться': [
+                'Выбрать конкретный навык для изучения',
+                'Найти качественные ресурсы для обучения',
+                'Составить учебный план на месяц',
+                'Выделить время для практики ежедневно',
+                'Изучить теоретическую базу',
+                'Выполнить первые практические задания',
+                'Получить обратную связь от эксперта',
+                'Создать первый проект/портфолио',
+                'Продолжить углублённое изучение',
+                'Применить навык на практике'
+            ],
+            'прочитать': [
+                'Выбрать список книг для чтения',
+                'Определить норму страниц в день',
+                'Выделить время для чтения ежедневно',
+                'Начать первую книгу из списка',
+                'Вести заметки по прочитанному',
+                'Обсудить книгу с друзьями/в клубе',
+                'Продолжить чтение следующих книг',
+                'Применить знания из книг на практике',
+                'Поделиться рекомендациями с другими',
+                'Завершить весь список книг'
+            ],
+            'спорт': [
+                'Пройти медицинское обследование',
+                'Определить цели тренировок',
+                'Выбрать вид спорта/программу',
+                'Приобрести необходимый инвентарь',
+                'Составить расписание тренировок',
+                'Начать с базовых упражнений',
+                'Постепенно увеличивать нагрузку',
+                'Отслеживать прогресс еженедельно',
+                'Добавить дополнительные активности',
+                'Достичь спортивной формы'
+            ],
+            'бизнес': [
+                'Определить бизнес-идею',
+                'Провести анализ рынка',
+                'Составить бизнес-план',
+                'Рассчитать необходимый бюджет',
+                'Зарегистрировать бизнес',
+                'Создать минимальный продукт (MVP)',
+                'Найти первых клиентов',
+                'Получить обратную связь',
+                'Масштабировать бизнес',
+                'Выйти на целевые показатели'
+            ],
+            'default': [
+                'Чётко сформулировать цель и критерии успеха',
+                'Провести анализ текущей ситуации',
+                'Определить необходимые ресурсы',
+                'Составить подробный план действий',
+                'Установить промежуточные дедлайны',
+                'Начать выполнение первого этапа',
+                'Отслеживать прогресс еженедельно',
+                'Корректировать план при необходимости',
+                'Преодолевать возникающие препятствия',
+                'Завершить цель и отпраздновать успех'
+            ]
+        };
+
+        function loadData() {
+            const saved = localStorage.getItem('aiGoalMasterData');
+            if (saved) {
+                appData = JSON.parse(saved);
+            }
+            
+            const today = new Date().toDateString();
+            if (appData.lastVisit !== today) {
+                if (appData.lastVisit) {
+                    appData.socialTimeToday = 0;
+                    saveDailyJournal();
+                }
+                appData.lastVisit = today;
+                updateStreak();
+            }
+            
+            updateUI();
+        }
+
+        function saveData() {
+            localStorage.setItem('aiGoalMasterData', JSON.stringify(appData));
+        }
+
+        function saveDailyJournal() {
+            const today = new Date().toDateString();
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toDateString();
+            
+            const todayTasks = appData.tasks.filter(t => t.date === yesterdayStr);
+            const completedTasks = todayTasks.filter(t => t.completed).length;
+            
+            const journalEntry = {
+                date: yesterdayStr,
+                tasksTotal: todayTasks.length,
+                tasksCompleted: completedTasks,
+                socialTime: appData.socialTimeToday,
+                focusTime: appData.focusTime,
+                productivity: todayTasks.length > 0 ? Math.round((completedTasks / todayTasks.length) * 100) : 0
+            };
+            
+            appData.journal.push(journalEntry);
+            
+            if (appData.journal.length > 30) {
+                appData.journal = appData.journal.slice(-30);
+            }
+        }
+
+        function updateStreak() {
+            const today = new Date().getDay();
+            const adjustedToday = today === 0 ? 6 : today - 1;
+            
+            for (let i = 0; i < 7; i++) {
+                const dayEl = document.querySelector(`[data-day="${i}"]`);
+                if (i === adjustedToday) {
+                    dayEl.classList.add('today');
+                } else {
+                    dayEl.classList.remove('today');
+                }
+                
+                if (appData.streak[i]) {
+                    dayEl.classList.add('active');
+                    dayEl.querySelector('.day-icon').textContent = '✓';
+                } else {
+                    dayEl.classList.remove('active');
+                    dayEl.querySelector('.day-icon').textContent = '';
+                }
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('mini-goals').textContent = appData.goals.filter(g => !g.completed).length;
+            const todayTasks = appData.tasks.filter(t => t.date === new Date().toDateString());
+            document.getElementById('mini-tasks').textContent = todayTasks.filter(t => !t.completed).length;
+
+            document.getElementById('goals-count').textContent = appData.goals.filter(g => !g.completed).length;
+            const completedToday = todayTasks.filter(t => t.completed).length;
+            document.getElementById('tasks-today').textContent = `${completedToday}/${todayTasks.length}`;
+            document.getElementById('social-time').textContent = `${Math.round(appData.socialTimeToday)} мин`;
+            document.getElementById('focus-time').textContent = `${(appData.focusTime / 60).toFixed(1)} ч`;
+
+            const hours = Math.floor(appData.socialTimeToday / 60);
+            const mins = Math.round(appData.socialTimeToday % 60);
+            document.getElementById('social-timer').textContent = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+
+            const goalsList = document.getElementById('goals-list');
+            const activeGoals = appData.goals.filter(g => !g.completed);
+            if (activeGoals.length === 0) {
+                goalsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🚀</div>
+                        <h3>Нет активных целей</h3>
+                        <p>Добавьте цель, и ИИ автоматически<br>разобьёт её на пошаговый план</p>
+                    </div>
+                `;
+            } else {
+                goalsList.innerHTML = activeGoals.map((goal, index) => {
+                    const realIndex = appData.goals.indexOf(goal);
+                    const progress = goal.totalSteps > 0 ? (goal.completedSteps / goal.totalSteps * 100) : 0;
+                    const daysLeft = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                    return `
+                        <div class="goal-card priority-${goal.priority}" onclick="viewGoalDetail(${realIndex})">
+                            <div class="goal-card-header">
+                                <div class="goal-title">${goal.title}</div>
+                                <span class="goal-badge ${goal.priority}">${getPriorityLabel(goal.priority)}</span>
+                            </div>
+                            <div class="goal-deadline">📅 ${daysLeft > 0 ? `Осталось: ${daysLeft} дн.` : '⚠️ Просрочено'}</div>
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress}%"></div>
+                                </div>
+                                <div class="goal-stats">
+                                    <span>${goal.completedSteps}/${goal.totalSteps} шагов выполнено</span>
+                                    <span>${Math.round(progress)}%</span>
+                                </div>
+                            </div>
+                            <div class="goal-steps-preview">
+                                ${Array(goal.totalSteps).fill(0).map((_, i) => 
+                                    `<div class="step-dot ${i < goal.completedSteps ? 'completed' : ''} ${i === goal.completedSteps ? 'current' : ''}"></div>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const tasksList = document.getElementById('tasks-list');
+            if (todayTasks.length === 0) {
+                tasksList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
+                        <h3>Нет задач на сегодня</h3>
+                        <p>Задачи создаются автоматически<br>при добавлении цели</p>
+                    </div>
+                `;
+            } else {
+                tasksList.innerHTML = todayTasks.map((task) => {
+                    const realIndex = appData.tasks.indexOf(task);
+                    return `
+                        <div class="task-item">
+                            <div class="task-checkbox ${task.completed ? 'checked' : ''}" onclick="toggleTask(${realIndex})">
+                                ${task.completed ? '✓' : ''}
+                            </div>
+                            <div class="task-content">
+                                <div class="task-title ${task.completed ? 'completed' : ''}">${task.title}</div>
+                                <div class="task-meta">
+                                    <span>⏱️ ${task.time} мин</span>
+                                    <span>${getPriorityLabel(task.priority)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const scheduleList = document.getElementById('schedule-list');
+            const todaySchedule = appData.schedule.filter(s => s.date === new Date().toDateString()).sort((a, b) => a.start.localeCompare(b.start));
+            if (todaySchedule.length === 0) {
+                scheduleList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📚</div>
+                        <h3>Нет расписания</h3>
+                        <p>Добавьте занятия, учёбу или работу</p>
+                    </div>
+                `;
+            } else {
+                scheduleList.innerHTML = todaySchedule.map((item) => {
+                    return `
+                        <div class="schedule-item">
+                            <div class="schedule-time">
+                                <div class="schedule-time-start">${item.start}</div>
+                                <div class="schedule-time-end">${item.end}</div>
+                            </div>
+                            <div class="schedule-divider ${item.type}"></div>
+                            <div class="schedule-info">
+                                <div class="schedule-title">${item.title}</div>
+                                <span class="schedule-type ${item.type}">${getTypeLabel(item.type)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updateJournal();
+            updateWeeklyReview();
+
+            const weekTasks = appData.tasks.filter(t => {
+                const taskDate = new Date(t.date);
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                return taskDate >= weekAgo && t.completed;
+            }).length;
+            document.getElementById('week-tasks').textContent = weekTasks;
+            document.getElementById('week-progress').style.width = `${Math.min(weekTasks * 5, 100)}%`;
+
+            document.getElementById('week-social').textContent = `${Math.round(appData.socialTime)} мин`;
+            document.getElementById('week-social-progress').style.width = `${Math.min(appData.socialTime, 100)}%`;
+
+            document.getElementById('week-focus').textContent = `${(appData.focusTime / 60).toFixed(1)} ч`;
+            document.getElementById('week-focus-progress').style.width = `${Math.min(appData.focusTime / 10, 100)}%`;
+
+            const completedGoals = appData.goals.filter(g => g.completed).length;
+            document.getElementById('week-goals').textContent = completedGoals;
+
+            const achievementsList = document.getElementById('achievements-list');
+            if (appData.achievements.length === 0) {
+                achievementsList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🏆</div>
+                        <h3>Нет достижений</h3>
+                        <p>Выполняй задачи и получай награды!</p>
+                    </div>
+                `;
+            } else {
+                achievementsList.innerHTML = appData.achievements.slice().reverse().map(a => `
+                    <div class="achievement-card">
+                        <div class="achievement-icon">🏆</div>
+                        <div class="achievement-info">
+                            <div class="achievement-title">${a.title}</div>
+                            <div class="achievement-date">${a.date}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const hour = new Date().getHours();
+            let greeting = 'Добрый день!';
+            let highlight = 'Готов к победам?';
+            if (hour < 6) { greeting = 'Доброй ночи!'; highlight = 'Время отдыхать'; }
+            else if (hour < 12) { greeting = 'Доброе утро!'; highlight = 'Новый день — новые возможности'; }
+            else if (hour < 18) { greeting = 'Добрый день!'; highlight = 'Продолжай в том же духе'; }
+            else { greeting = 'Добрый вечер!'; highlight = 'Заверши день продуктивно'; }
+            document.getElementById('greeting').innerHTML = `${greeting} <span class="highlight">${highlight}</span>`;
+
+            updateStreak();
+            updateSocialTimerDisplay();
+            saveData();
+        }
+
+        function updateJournal() {
+            const journalList = document.getElementById('journal-list');
+            
+            if (appData.journal.length === 0) {
+                journalList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📔</div>
+                        <h3>Нет записей</h3>
+                        <p>Выполняй задачи каждый день,<br>и здесь появится твоя история</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+            
+            journalList.innerHTML = appData.journal.slice().reverse().map((entry, index) => {
+                const date = new Date(entry.date);
+                const dayName = dayNames[date.getDay()];
+                const dayNum = date.getDate();
+                const month = date.toLocaleDateString('ru-RU', { month: 'long' });
+                
+                const tasks = appData.tasks.filter(t => t.date === entry.date);
+                
+                let productivityClass = 'good';
+                let productivityEmoji = '🔥';
+                if (entry.productivity < 50) { productivityClass = 'bad'; productivityEmoji = '😔'; }
+                else if (entry.productivity < 80) { productivityClass = 'warning'; productivityEmoji = '😊'; }
+
+                return `
+                    <div class="journal-day-card">
+                        <div class="journal-day-header">
+                            <div class="journal-day-title">
+                                <span>${productivityEmoji}</span>
+                                ${dayName}, ${dayNum} ${month}
+                            </div>
+                            <div class="journal-day-stats">
+                                <div class="journal-stat">
+                                    <div class="journal-stat-value ${productivityClass}">${entry.productivity}%</div>
+                                    <div class="journal-stat-label">Продуктивность</div>
+                                </div>
+                                <div class="journal-stat">
+                                    <div class="journal-stat-value">${entry.tasksCompleted}/${entry.tasksTotal}</div>
+                                    <div class="journal-stat-label">Задач</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="journal-tasks-list">
+                            ${tasks.map(task => `
+                                <div class="journal-task-item ${task.completed ? 'completed' : ''}">
+                                    <div class="journal-task-check ${task.completed ? 'done' : 'pending'}">
+                                        ${task.completed ? '✓' : '○'}
+                                    </div>
+                                    <span>${task.title}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateWeeklyReview() {
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            
+            const weekTasks = appData.tasks.filter(t => {
+                const taskDate = new Date(t.date);
+                return taskDate >= weekAgo && t.completed;
+            });
+            
+            const weekJournal = appData.journal.filter(j => {
+                const journalDate = new Date(j.date);
+                return journalDate >= weekAgo;
+            });
+            
+            const totalTasks = weekJournal.reduce((sum, j) => sum + j.tasksTotal, 0);
+            const completedTasks = weekJournal.reduce((sum, j) => sum + j.tasksCompleted, 0);
+            const totalSocial = weekJournal.reduce((sum, j) => sum + j.socialTime, 0);
+            const totalFocus = weekJournal.reduce((sum, j) => sum + j.focusTime, 0);
+            
+            const productivity = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            const scoreCircle = document.getElementById('score-circle');
+            const scoreEmoji = document.getElementById('score-emoji');
+            const scoreValue = document.getElementById('score-value');
+            
+            scoreCircle.className = 'score-circle';
+            if (productivity >= 80) { 
+                scoreCircle.classList.add('excellent'); 
+                scoreEmoji.textContent = '🏆';
+            } else if (productivity >= 60) { 
+                scoreCircle.classList.add('good'); 
+                scoreEmoji.textContent = '😊';
+            } else if (productivity >= 40) { 
+                scoreCircle.classList.add('average'); 
+                scoreEmoji.textContent = '😐';
+            } else { 
+                scoreCircle.classList.add('poor'); 
+                scoreEmoji.textContent = '😔';
+            }
+            
+            scoreValue.textContent = `${productivity}%`;
+            
+            document.getElementById('week-tasks-done').textContent = completedTasks;
+            document.getElementById('week-focus-hours').textContent = (totalFocus / 60).toFixed(1);
+            document.getElementById('week-social-mins').textContent = Math.round(totalSocial);
+            
+            const streakCount = appData.streak.filter(s => s).length;
+            document.getElementById('week-streak').textContent = streakCount;
+            
+            const today = new Date();
+            const weekStart = new Date(today);
+            weekStart.setDate(weekStart.getDate() - 7);
+            document.getElementById('week-dates').textContent = 
+                `${weekStart.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'})} — ${today.toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'})}`;
+            
+            const feedbackEl = document.getElementById('week-feedback');
+            if (completedTasks === 0) {
+                feedbackEl.textContent = 'Добавь первую цель и начни выполнять задачи! ИИ создаст персональный план для тебя.';
+            } else if (productivity >= 80) {
+                feedbackEl.textContent = 'Восхитительно! Ты на пике продуктивности. Продолжай в том же духе и достигнешь всех целей! 🚀';
+            } else if (productivity >= 60) {
+                feedbackEl.textContent = 'Хороший результат! Попробуй уменьшить время в соцсетях на 5 минут в день для ещё лучших результатов.';
+            } else if (productivity >= 40) {
+                feedbackEl.textContent = 'Есть потенциал для роста! Попробуй выполнять хотя бы одну задачу каждый день и увидишь прогресс.';
+            } else {
+                feedbackEl.textContent = 'Начни с малого! Выбери одну простую задачу на завтра и выполни её. Маленькие шаги ведут к большим победам! 💪';
+            }
+        }
+
+        function generateAIGoalPlan(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('goal-title').value.toLowerCase();
+            const description = document.getElementById('goal-description').value;
+            const deadline = document.getElementById('goal-deadline').value;
+            const priority = document.getElementById('goal-priority').value;
+            const stepsCount = parseInt(document.getElementById('goal-steps').value);
+
+            document.getElementById('goal-form').style.display = 'none';
+            document.getElementById('ai-processing').classList.add('active');
+
+            let category = 'default';
+            for (const key of Object.keys(aiGoalTemplates)) {
+                if (title.includes(key)) {
+                    category = key;
+                    break;
+                }
+            }
+
+            setTimeout(() => {
+                const template = aiGoalTemplates[category];
+                const selectedSteps = template.slice(0, Math.min(stepsCount, template.length));
+                
+                const previewContainer = document.getElementById('ai-steps-preview');
+                previewContainer.innerHTML = selectedSteps.map((step, i) => `
+                    <div class="ai-step-item" style="animation-delay: ${i * 0.1}s">
+                        <div class="ai-step-number">${i + 1}</div>
+                        <div class="ai-step-text">${step}</div>
+                    </div>
+                `).join('');
+
+                setTimeout(() => {
+                    const goal = {
+                        title: document.getElementById('goal-title').value,
+                        description: description,
+                        deadline: deadline,
+                        priority: priority,
+                        totalSteps: selectedSteps.length,
+                        completedSteps: 0,
+                        steps: selectedSteps.map((s, i) => ({
+                            title: s,
+                            completed: false,
+                            id: i
+                        })),
+                        completed: false,
+                        createdAt: new Date().toISOString()
+                    };
+                    appData.goals.push(goal);
+
+                    const today = new Date().toDateString();
+                    const todayTasks = selectedSteps.slice(0, 3).map((step, i) => ({
+                        title: step,
+                        goalId: appData.goals.length - 1,
+                        time: 30 + i * 15,
+                        priority: priority,
+                        completed: false,
+                        date: today,
+                        stepId: i
+                    }));
+                    appData.tasks.push(...todayTasks);
+
+                    closeModal('goal-modal');
+                    document.getElementById('goal-form').reset();
+                    document.getElementById('goal-form').style.display = 'block';
+                    document.getElementById('ai-processing').classList.remove('active');
+                    document.getElementById('ai-steps-preview').innerHTML = '';
+
+                    showToast('🤖 ИИ создал план из ' + selectedSteps.length + ' шагов!');
+                    
+                    updateUI();
+                }, 1500);
+            }, 2000);
+        }
+
+        function viewGoalDetail(index) {
+            const goal = appData.goals[index];
+            const content = document.getElementById('goal-detail-content');
+            
+            const progress = goal.totalSteps > 0 ? (goal.completedSteps / goal.totalSteps * 100) : 0;
+            const daysLeft = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+
+            content.innerHTML = `
+                <div class="goal-card priority-${goal.priority}" style="margin-bottom: 20px;">
+                    <div class="goal-card-header">
+                        <div class="goal-title">${goal.title}</div>
+                        <span class="goal-badge ${goal.priority}">${getPriorityLabel(goal.priority)}</span>
+                    </div>
+                    <div class="goal-deadline">📅 ${daysLeft > 0 ? `Осталось: ${daysLeft} дн.` : '⚠️ Просрочено'}</div>
+                    <div class="goal-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="goal-stats">
+                            <span>${goal.completedSteps}/${goal.totalSteps} шагов</span>
+                            <span>${Math.round(progress)}%</span>
+                        </div>
+                    </div>
+                </div>
+                <h3 style="margin-bottom: 16px; font-size: 16px;">📋 Шаги к цели:</h3>
+                <div class="goal-detail-steps">
+                    ${goal.steps.map((step, i) => `
+                        <div class="goal-detail-step ${step.completed ? 'completed' : ''}" onclick="toggleStep(${index}, ${i})">
+                            <div class="step-check ${step.completed ? 'completed' : ''}">${step.completed ? '✓' : ''}</div>
+                            <div class="step-info">
+                                <div class="step-title">${step.title}</div>
+                                <div class="step-desc">Шаг ${i + 1} из ${goal.totalSteps}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            openModal('goal-detail-modal');
+        }
+
+        function toggleStep(goalIndex, stepIndex) {
+            const goal = appData.goals[goalIndex];
+            const step = goal.steps[stepIndex];
+            
+            step.completed = !step.completed;
+            goal.completedSteps = goal.steps.filter(s => s.completed).length;
+            
+            const today = new Date().toDateString();
+            const relatedTask = appData.tasks.find(t => 
+                t.date === today && 
+                t.goalId === goalIndex && 
+                t.stepId === stepIndex
+            );
+            
+            if (relatedTask) {
+                relatedTask.completed = step.completed;
+            }
+            
+            if (goal.completedSteps >= goal.totalSteps) {
+                goal.completed = true;
+                addAchievement(`🎯 Цель "${goal.title}" достигнута!`);
+                showToast('🎉 Цель достигнута! Поздравляем!');
+            }
+            
+            closeModal('goal-detail-modal');
+            checkAchievements();
+            updateUI();
+        }
+
+        function toggleTask(index) {
+            appData.tasks[index].completed = !appData.tasks[index].completed;
+            
+            if (appData.tasks[index].goalId !== undefined && appData.tasks[index].stepId !== undefined) {
+                const goal = appData.goals[appData.tasks[index].goalId];
+                if (goal && goal.steps[appData.tasks[index].stepId]) {
+                    goal.steps[appData.tasks[index].stepId].completed = appData.tasks[index].completed;
+                    goal.completedSteps = goal.steps.filter(s => s.completed).length;
+                    
+                    if (goal.completedSteps >= goal.totalSteps) {
+                        goal.completed = true;
+                        addAchievement(`🎯 Цель "${goal.title}" достигнута!`);
+                    }
+                }
+            }
+            
+            showToast(appData.tasks[index].completed ? '✅ Задача выполнена!' : '↩️ Задача reopened');
+            checkAchievements();
+            updateUI();
+        }
+
+        function addSchedule(event) {
+            event.preventDefault();
+            const item = {
+                title: document.getElementById('schedule-title').value,
+                start: document.getElementById('schedule-start').value,
+                end: document.getElementById('schedule-end').value,
+                type: document.getElementById('schedule-type').value,
+                date: new Date().toDateString()
+            };
+            appData.schedule.push(item);
+            closeModal('schedule-modal');
+            event.target.reset();
+            updateUI();
+            showToast('📅 Добавлено в расписание!');
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('timer-start-btn');
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                btn.innerHTML = '<span>▶</span> Старт';
+                btn.className = 'timer-btn start';
+            } else {
+                timerRunning = true;
+                btn.innerHTML = '<span>⏸</span> Пауза';
+                btn.className = 'timer-btn pause';
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    if (timerSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        appData.focusTime += 25;
+                        addAchievement('⏱️ Сессия фокуса завершена! +25 мин');
+                        btn.innerHTML = '<span>▶</span> Старт';
+                        btn.className = 'timer-btn start';
+                        timerSeconds = 25 * 60;
+                        timerTotal = 25 * 60;
+                        showToast('🎉 Сессия фокуса завершена!');
+                    }
+                    updateTimerDisplay();
+                    updateUI();
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerSeconds = 25 * 60;
+            timerTotal = 25 * 60;
+            updateTimerDisplay();
+            const btn = document.getElementById('timer-start-btn');
+            btn.innerHTML = '<span>▶</span> Старт';
+            btn.className = 'timer-btn start';
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('timer-display').textContent = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            const progress = timerSeconds / timerTotal;
+            const circumference = 2 * Math.PI * 130;
+            const offset = circumference * (1 - progress);
+            document.getElementById('timer-progress').style.strokeDashoffset = offset;
+        }
+
+        function toggleSocialTimer() {
+            const btn = document.getElementById('social-timer-btn');
+            if (appData.socialTimerRunning) {
+                clearInterval(socialTimerInterval);
+                appData.socialTimerRunning = false;
+                btn.innerHTML = '<span>▶</span> Начать';
+                btn.className = 'social-timer-btn start';
+                
+                appData.socialTimeToday += appData.socialTimerSeconds / 60;
+                appData.socialTime += appData.socialTimerSeconds / 60;
+            } else {
+                appData.socialTimerRunning = true;
+                btn.innerHTML = '<span>⏹</span> Стоп';
+                btn.className = 'social-timer-btn stop';
+                
+                socialTimerInterval = setInterval(() => {
+                    appData.socialTimerSeconds++;
+                    
+                    if (appData.socialTimerSeconds >= 600 && appData.socialTimeToday >= 10) {
+                        clearInterval(socialTimerInterval);
+                        appData.socialTimerRunning = false;
+                        btn.innerHTML = '<span>▶</span> Начать';
+                        btn.className = 'social-timer-btn start';
+                        showToast('⚠️ Лимит 10 минут исчерпан!', 'warning');
+                    }
+                    
+                    updateSocialTimerDisplay();
+                    updateUI();
+                }, 1000);
+            }
+        }
+
+        function resetSocialTimer() {
+            clearInterval(socialTimerInterval);
+            appData.socialTimerRunning = false;
+            appData.socialTimerSeconds = 0;
+            
+            const btn = document.getElementById('social-timer-btn');
+            btn.innerHTML = '<span>▶</span> Начать';
+            btn.className = 'social-timer-btn start';
+            
+            updateSocialTimerDisplay();
+            updateUI();
+        }
+
+        function updateSocialTimerDisplay() {
+            const mins = Math.floor(appData.socialTimerSeconds / 60);
+            const secs = appData.socialTimerSeconds % 60;
+            const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            if (appData.socialTimerRunning) {
+                document.getElementById('social-timer').textContent = display;
+            }
+        }
+
+        function addAchievement(title) {
+            appData.achievements.push({
+                title: title,
+                date: new Date().toLocaleDateString('ru-RU')
+            });
+        }
+
+        function checkAchievements() {
+            const completedTasks = appData.tasks.filter(t => t.completed).length;
+            
+            if (completedTasks === 1 && !appData.achievements.find(a => a.title.includes('Первая задача'))) {
+                addAchievement('🎉 Первая задача выполнена!');
+                showToast('🏆 Новое достижение!');
+            }
+            if (completedTasks === 10 && !appData.achievements.find(a => a.title.includes('10 задач'))) {
+                addAchievement('🔥 10 задач выполнено!');
+                showToast('🏆 Новое достижение!');
+            }
+            if (completedTasks === 50 && !appData.achievements.find(a => a.title.includes('50 задач'))) {
+                addAchievement('💪 50 задач выполнено! Мастер продуктивности!');
+                showToast('🏆 Новое достижение!');
+            }
+            if (appData.focusTime >= 60 && !appData.achievements.find(a => a.title.includes('Час фокуса'))) {
+                addAchievement('⏱️ Час в фокусе! Концентрация на уровне!');
+                showToast('🏆 Новое достижение!');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌';
+            document.getElementById('toast-message').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function getPriorityLabel(priority) {
+            const labels = { high: '🔥 Высокий', medium: '⚡ Средний', low: '💚 Низкий' };
+            return labels[priority] || priority;
+        }
+
+        function getTypeLabel(type) {
+            const labels = { 
+                study: '📚 Учёба', 
+                work: '💼 Работа', 
+                break: '☕ Перерыв',
+                sport: '🏃 Спорт',
+                other: '📌 Другое' 
+            };
+            return labels[type] || type;
+        }
+
+        function switchPage(pageName) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(`page-${pageName}`).classList.add('active');
+            document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+
+        loadData();
+        document.getElementById('goal-deadline').min = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
+
