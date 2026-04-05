@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Goal Master - Умные Цели</title>
+    <title>AI Goal Master - Премиум Анализ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -42,7 +42,7 @@
             --gradient-2: linear-gradient(135deg, #10B981 0%, #34D399 100%);
             --gradient-3: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
             --gradient-4: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%);
-            --gradient-5: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-premium: linear-gradient(135deg, #F59E0B 0%, #EC4899 100%);
         }
 
         body {
@@ -128,6 +128,17 @@
             font-size: 20px;
             font-weight: 700;
             color: white;
+        }
+
+        .premium-badge {
+            background: linear-gradient(135deg, #FBBF24, #F59E0B);
+            color: #000;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .header-stats {
@@ -1512,6 +1523,199 @@
             line-height: 1.6;
         }
 
+        /* Premium Features */
+        .premium-banner {
+            background: var(--gradient-premium);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3);
+        }
+
+        .premium-banner h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .premium-banner p {
+            font-size: 14px;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .premium-price {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .premium-price span {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .premium-features {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .premium-feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+
+        .premium-feature-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .btn-premium {
+            width: 100%;
+            padding: 18px;
+            background: white;
+            color: #D97706;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .premium-analysis {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid #FBBF24;
+            border-radius: 20px;
+            padding: 24px;
+            margin: 20px;
+        }
+
+        .premium-analysis h3 {
+            color: #92400E;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analysis-section {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            margin: 12px 0;
+        }
+
+        .analysis-section h4 {
+            color: #78350F;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .analysis-section p {
+            color: #92400E;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .analysis-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .analysis-stat {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .analysis-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #D97706;
+        }
+
+        .analysis-stat-label {
+            font-size: 11px;
+            color: #B45309;
+            margin-top: 4px;
+        }
+
+        .locked-feature {
+            position: relative;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .locked-feature::after {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            opacity: 0.5;
+        }
+
+        .payment-modal .phone-number {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            border: 2px solid #FBBF24;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .payment-modal .phone-number-label {
+            font-size: 14px;
+            color: #92400E;
+            margin-bottom: 8px;
+        }
+
+        .payment-modal .phone-number-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #D97706;
+            letter-spacing: 2px;
+        }
+
+        .payment-modal .payment-instruction {
+            background: var(--bg-card-hover);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .payment-modal .payment-instruction ol {
+            margin-left: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -1614,6 +1818,14 @@
                     <div class="streak-day" data-day="5"><span class="day-name">Сб</span><span class="day-icon"></span></div>
                     <div class="streak-day" data-day="6"><span class="day-name">Вс</span><span class="day-icon"></span></div>
                 </div>
+            </div>
+
+            <!-- Premium Banner -->
+            <div class="premium-banner" id="premium-banner" onclick="openModal('premium-modal')">
+                <h2>👑 Premium Анализ</h2>
+                <p>Получи детальный отчёт о своей продуктивности и советы по улучшению</p>
+                <div class="premium-price">9 ₽ <span>/ месяц</span></div>
+                <button class="btn-premium">Подключить Premium</button>
             </div>
 
             <div class="section">
@@ -1792,6 +2004,56 @@
             </div>
         </div>
 
+        <!-- Страница Premium Анализа -->
+        <div class="page" id="page-premium">
+            <div class="header">
+                <div class="logo" style="margin-bottom: 20px;">
+                    <div class="logo-icon">👑</div>
+                    <span class="logo-text">Premium Анализ</span>
+                </div>
+                <h1 class="greeting">Детальный <span class="highlight">разбор</span></h1>
+                <p class="greeting-subtitle">AI-анализ твоей продуктивности</p>
+            </div>
+
+            <div class="premium-analysis" id="premium-content">
+                <h3>📈 Полный отчёт за неделю</h3>
+                
+                <div class="analysis-section">
+                    <h4>🎯 Эффективность недели</h4>
+                    <p id="week-efficiency">Анализируем данные...</p>
+                </div>
+
+                <div class="analysis-section">
+                    <h4>📱 Время в соцсетях</h4>
+                    <p id="social-analysis">Сколько времени потрачено впустую</p>
+                </div>
+
+                <div class="analysis-section">
+                    <h4>💡 Как улучшить</h4>
+                    <p id="improvement-tips">Персональные рекомендации</p>
+                </div>
+
+                <div class="analysis-stats">
+                    <div class="analysis-stat">
+                        <div class="analysis-stat-value" id="lost-hours">0</div>
+                        <div class="analysis-stat-label">Потеряно часов</div>
+                    </div>
+                    <div class="analysis-stat">
+                        <div class="analysis-stat-value" id="potential-tasks">0</div>
+                        <div class="analysis-stat-label">Можно было сделать</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="premium-locked">
+                <div class="empty-state locked-feature">
+                    <div class="icon">🔒</div>
+                    <h3>Premium функция</h3>
+                    <p>Подключи Premium за 9₽/месяц<br>для доступа к детальному анализу</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Страница статистики -->
         <div class="page" id="page-stats">
             <div class="header">
@@ -1861,14 +2123,76 @@
                 <span class="icon">📔</span>
                 <span class="label">Дневник</span>
             </div>
-            <div class="nav-item" data-page="stats" onclick="switchPage('stats')">
-                <span class="icon">📊</span>
-                <span class="label">Статистика</span>
+            <div class="nav-item" data-page="premium" onclick="switchPage('premium')">
+                <span class="icon">👑</span>
+                <span class="label">Premium</span>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно: Новая цель с AI -->
+    <!-- Модальное окно: Premium подписка -->
+    <div class="modal payment-modal" id="premium-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">👑 Premium Подписка</h2>
+                <button class="modal-close" onclick="closeModal('premium-modal')">×</button>
+            </div>
+            
+            <div class="premium-banner" style="margin: 0; margin-bottom: 24px;">
+                <h2>Полный AI-анализ</h2>
+                <p>Все функции премиум анализа</p>
+                <div class="premium-price">9 ₽ <span>/ месяц</span></div>
+            </div>
+
+            <div class="premium-features">
+                <div class="premium-feature">
+                    <div class="premium-feature-icon">✓</div>
+                    <span>Детальный разбор недели</span>
+                </div>
+                <div class="premium-feature">
+                    <div class="premium-feature-icon">✓</div>
+                    <span>Анализ потерянного времени</span>
+                </div>
+                <div class="premium-feature">
+                    <div class="premium-feature-icon">✓</div>
+                    <span>Персональные советы</span>
+                </div>
+                <div class="premium-feature">
+                    <div class="premium-feature-icon">✓</div>
+                    <span>Сравнение с прошлыми неделями</span>
+                </div>
+                <div class="premium-feature">
+                    <div class="premium-feature-icon">✓</div>
+                    <span>Прогноз продуктивности</span>
+                </div>
+            </div>
+
+            <div class="phone-number">
+                <div class="phone-number-label">📱 Перевод на номер:</div>
+                <div class="phone-number-value">8 (952) 111-22-07</div>
+            </div>
+
+            <div class="payment-instruction">
+                <h4 style="margin-bottom: 12px; color: var(--text);">Как активировать:</h4>
+                <ol>
+                    <li>Отправьте 9 ₽ на номер <strong>8 (952) 111-22-07</strong></li>
+                    <li>В комментарии укажите: <strong>"Premium AI Goals"</strong></li>
+                    <li>Сделайте скриншот оплаты</li>
+                    <li>Отправьте скриншот на этот номер</li>
+                    <li>В течение часа вы получите код активации</li>
+                </ol>
+            </div>
+
+            <button class="btn-primary" onclick="activatePremium()">
+                <span>💳</span> Я оплатил
+            </button>
+            <button class="btn-secondary" onclick="closeModal('premium-modal')">
+                Отмена
+            </button>
+        </div>
+    </div>
+
+    <!-- Остальные модальные окна (goal, schedule, goal-detail) остаются как были -->
     <div class="modal" id="goal-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1923,18 +2247,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно: Детали цели -->
-    <div class="modal" id="goal-detail-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">📋 План достижения</h2>
-                <button class="modal-close" onclick="closeModal('goal-detail-modal')">×</button>
-            </div>
-            <div id="goal-detail-content"></div>
-        </div>
-    </div>
-
-    <!-- Модальное окно: Расписание -->
     <div class="modal" id="schedule-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1972,6 +2284,16 @@
         </div>
     </div>
 
+    <div class="modal" id="goal-detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">📋 План достижения</h2>
+                <button class="modal-close" onclick="closeModal('goal-detail-modal')">×</button>
+            </div>
+            <div id="goal-detail-content"></div>
+        </div>
+    </div>
+
     <!-- Toast уведомления -->
     <div class="toast" id="toast">
         <span class="toast-icon">✅</span>
@@ -1991,14 +2313,15 @@
             lastVisit: null,
             journal: [],
             socialTimerRunning: false,
-            socialTimerSeconds: 0
+            socialTimerSeconds: 0,
+            isPremium: false,
+            premiumExpiry: null
         };
 
         let timerInterval = null;
         let timerRunning = false;
         let timerSeconds = 25 * 60;
         let timerTotal = 25 * 60;
-
         let socialTimerInterval = null;
 
         const aiGoalTemplates = {
@@ -2101,9 +2424,13 @@
         };
 
         function loadData() {
-            const saved = localStorage.getItem('aiGoalMasterData');
-            if (saved) {
-                appData = JSON.parse(saved);
+            try {
+                const saved = localStorage.getItem('aiGoalMasterPremiumData');
+                if (saved) {
+                    appData = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error('Error loading data:', e);
             }
             
             const today = new Date().toDateString();
@@ -2116,11 +2443,23 @@
                 updateStreak();
             }
             
+            // Check premium status
+            if (appData.premiumExpiry) {
+                const expiryDate = new Date(appData.premiumExpiry);
+                if (expiryDate < new Date()) {
+                    appData.isPremium = false;
+                }
+            }
+            
             updateUI();
         }
 
         function saveData() {
-            localStorage.setItem('aiGoalMasterData', JSON.stringify(appData));
+            try {
+                localStorage.setItem('aiGoalMasterPremiumData', JSON.stringify(appData));
+            } catch (e) {
+                console.error('Error saving data:', e);
+            }
         }
 
         function saveDailyJournal() {
@@ -2285,6 +2624,7 @@
 
             updateJournal();
             updateWeeklyReview();
+            updatePremiumAnalysis();
 
             const weekTasks = appData.tasks.filter(t => {
                 const taskDate = new Date(t.date);
@@ -2333,6 +2673,14 @@
             else if (hour < 18) { greeting = 'Добрый день!'; highlight = 'Продолжай в том же духе'; }
             else { greeting = 'Добрый вечер!'; highlight = 'Заверши день продуктивно'; }
             document.getElementById('greeting').innerHTML = `${greeting} <span class="highlight">${highlight}</span>`;
+
+            // Show/hide premium banner
+            const premiumBanner = document.getElementById('premium-banner');
+            if (appData.isPremium) {
+                premiumBanner.style.display = 'none';
+            } else {
+                premiumBanner.style.display = 'block';
+            }
 
             updateStreak();
             updateSocialTimerDisplay();
@@ -2468,6 +2816,95 @@
             } else {
                 feedbackEl.textContent = 'Начни с малого! Выбери одну простую задачу на завтра и выполни её. Маленькие шаги ведут к большим победам! 💪';
             }
+        }
+
+        function updatePremiumAnalysis() {
+            if (!appData.isPremium) {
+                document.getElementById('premium-content').style.display = 'none';
+                document.getElementById('premium-locked').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('premium-content').style.display = 'block';
+            document.getElementById('premium-locked').style.display = 'none';
+
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            
+            const weekJournal = appData.journal.filter(j => {
+                const journalDate = new Date(j.date);
+                return journalDate >= weekAgo;
+            });
+
+            const totalSocial = weekJournal.reduce((sum, j) => sum + j.socialTime, 0);
+            const totalFocus = weekJournal.reduce((sum, j) => sum + j.focusTime, 0);
+            const totalTasks = weekJournal.reduce((sum, j) => sum + j.tasksTotal, 0);
+            const completedTasks = weekJournal.reduce((sum, j) => sum + j.tasksCompleted, 0);
+            const avgProductivity = weekJournal.length > 0 ? Math.round(weekJournal.reduce((sum, j) => sum + j.productivity, 0) / weekJournal.length) : 0;
+
+            // Calculate lost hours (time that could have been used for tasks)
+            const lostHours = Math.round((totalSocial / 60) * 2); // Assume 2 tasks per hour of social media
+            const potentialTasks = lostHours * 2;
+
+            // Efficiency analysis
+            let efficiencyText = '';
+            if (avgProductivity >= 80) {
+                efficiencyText = `Отличная работа! Твоя продуктивность на уровне ${avgProductivity}% — это выше среднего. Ты эффективно используешь время.`;
+            } else if (avgProductivity >= 60) {
+                efficiencyText = `Хороший результат (${avgProductivity}%), но есть куда расти. Сосредоточься на выполнении задач в первой половине дня.`;
+            } else if (avgProductivity >= 40) {
+                efficiencyText = `Продуктивность ${avgProductivity}% — нужно поднажать. Попробуй технику Pomodoro и убери отвлекающие факторы.`;
+            } else {
+                efficiencyText = `Продуктивность ${avgProductivity}% — время для серьёзных изменений. Начни с маленьких шагов.`;
+            }
+
+            // Social media analysis
+            const socialHours = (totalSocial / 60).toFixed(1);
+            let socialText = '';
+            if (totalSocial > 70) {
+                socialText = `За неделю ты потратил ${socialHours} часов на соцсети — это ${lostHours} часа, которые можно было использовать для ${potentialTasks} дополнительных задач!`;
+            } else if (totalSocial > 30) {
+                socialText = `Ты провёл ${socialHours} часов в соцсетях. Попробуй снизить до 10 минут в день.`;
+            } else {
+                socialText = `Отлично! Всего ${socialHours} часов в соцсетях — ты контролируешь своё время.`;
+            }
+
+            // Improvement tips
+            let tipsText = '';
+            if (totalSocial > 50) {
+                tipsText += '1. Установи лимит 10 минут на соцсети\n';
+            }
+            if (totalFocus < 60) {
+                tipsText += '2. Используй фокус-таймер минимум 25 минут в день\n';
+            }
+            if (completedTasks < totalTasks * 0.5) {
+                tipsText += '3. Разбивай задачи на более мелкие шаги\n';
+            }
+            if (avgProductivity < 60) {
+                tipsText += '4. Планируй день с вечера\n';
+            }
+            if (tipsText === '') {
+                tipsText = 'Ты молодец! Продолжай в том же духе. Попробуй добавить ещё одну задачу в день для роста.';
+            }
+
+            document.getElementById('week-efficiency').textContent = efficiencyText;
+            document.getElementById('social-analysis').textContent = socialText;
+            document.getElementById('improvement-tips').textContent = tipsText;
+            document.getElementById('lost-hours').textContent = lostHours;
+            document.getElementById('potential-tasks').textContent = potentialTasks;
+        }
+
+        function activatePremium() {
+            // Set premium for 30 days
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + 30);
+            appData.premiumExpiry = expiryDate.toISOString();
+            appData.isPremium = true;
+            
+            saveData();
+            closeModal('premium-modal');
+            showToast('👑 Premium активирован на 30 дней!', 'success');
+            updateUI();
         }
 
         function generateAIGoalPlan(event) {
@@ -2631,7 +3068,7 @@
                 }
             }
             
-            showToast(appData.tasks[index].completed ? '✅ Задача выполнена!' : '↩️ Задача reopened');
+            showToast(appData.tasks[index].completed ? '✅ Задача выполнена!' : '↩️ Задача отменена');
             checkAchievements();
             updateUI();
         }
@@ -2817,6 +3254,10 @@
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(`page-${pageName}`).classList.add('active');
             document.querySelector(`[data-page="${pageName}"]`).classList.add('active');
+            
+            if (pageName === 'premium') {
+                updatePremiumAnalysis();
+            }
         }
 
         function openModal(modalId) {
